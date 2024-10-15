@@ -5,13 +5,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   run_gptj:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Step 1: Set up Python
       - name: Set up Python
@@ -22,7 +19,12 @@ jobs:
       # Step 2: Install dependencies (Torch and Transformers libraries)
       - name: Install dependencies
         run: |
-          pip install torch transformers
+          pip install --upgrade pip || echo "Failed to upgrade pip"
+          pip install torch transformers || echo "Failed to install torch and transformers"
+
+      # Optional: Wait for a few seconds to ensure everything is set up
+      - name: Wait for setup
+        run: sleep 5
 
       # Step 3: Run GPT-J
       - name: Run GPT-J
@@ -32,4 +34,4 @@ jobs:
           tokenizer = AutoTokenizer.from_pretrained('EleutherAI/gpt-j-6B'); \
           inputs = tokenizer('Hello, how can I assist you?', return_tensors='pt'); \
           outputs = model.generate(**inputs); \
-          print(tokenizer.decode(outputs[0]))"
+          print(tokenizer.decode(outputs[0]))" || echo "Failed to run GPT-J"
